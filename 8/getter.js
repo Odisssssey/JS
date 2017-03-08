@@ -76,15 +76,15 @@ unhold(items[2]);
 items.forEach(function (id, i){
   console.log(`Товар ${id.title} (остаток ${id.available}, в резерве ${id.holded})`);
 });
+
 positions.forEach(function (id, i){
+  console.log(id);
   const config = {
-    writable: true,
-    enumerable: true,
-    get() {
+    get () {
       return this.price/100*(100-this.discount);
-    }
-    set(price) {
-      this.discount = price//найти формулу при которой будут считаться новые проценты
+    },
+    set (price) {
+      this.discount = price / this.price * 100;
     }
   };
   Object.defineProperty(id, 'finalPrice', config);
@@ -92,4 +92,45 @@ positions.forEach(function (id, i){
 
 console.log(positions[0].finalPrice); // 9300
 positions[2].finalPrice = 28500;
+console.log(positions[2].finalPrice);
 console.log(positions[2].discount); // 50
+
+
+const requiredFields = [ 'title', 'price', 'discount' ];
+let form1 = {
+  title: 'Товар Телепорт бытовой VZHIH-101',
+  price: 7800,
+  discount: 0
+};
+let form2 = {
+  title: 'Товар Телепорт бытовой VZHIH-101',
+  discount: 10
+};
+
+
+function isValidPosition(pos, needpart){
+  var z=0;
+  needpart.forEach(function (id, i){
+    try{
+      if(typeof(pos[`${id}`]) == "undefined"){
+        z += 1;
+      }
+    } catch(e) {}
+  });
+  if(z === 0){
+    return true;
+  }else{
+    return false;
+  }
+  
+}
+
+function ValidPosition(pos, needpart){
+  if (isValidPosition(pos, needpart)){
+    console.log('Форма заполнена верно');
+  } else {
+    console.log('В форме не заполнены необходимые поля');
+  }
+}
+
+ValidPosition(form2, requiredFields);
